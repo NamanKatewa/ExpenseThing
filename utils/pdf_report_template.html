@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPaladin Summary Report</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 50px;
+            box-sizing: border-box;
+            color: #34495e;
+            line-height: 1.6;
+            font-size: 10pt;
+        }
+
+        /* Cover Page */
+        .cover-page {
+            text-align: center;
+            padding-top: 200px;
+            page-break-after: always;
+        }
+
+        .cover-page h1 {
+            font-size: 36pt;
+            color: #2c3e50;
+            margin-bottom: 24pt;
+        }
+
+        .cover-page h2 {
+            font-size: 18pt;
+            color: #34495e;
+            margin-bottom: 36pt;
+        }
+
+        .cover-page p {
+            font-size: 10pt;
+            color: #34495e;
+            margin-bottom: 10pt;
+        }
+
+        /* Section Styling */
+        .section {
+            page-break-before: always;
+            padding-top: 20px;
+            /* Breathing room at the top of each section */
+        }
+
+        .section-title {
+            font-size: 16pt;
+            color: #2c3e50;
+            margin-bottom: 10pt;
+            padding-bottom: 5pt;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-description {
+            font-size: 10pt;
+            margin-bottom: 15pt;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20pt;
+        }
+
+        th,
+        td {
+            border: 1px solid #ecf0f1;
+            padding: 12pt 8pt;
+            /* Increased padding for breathing room */
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #3498db;
+            /* Default header color */
+            color: white;
+            font-size: 9pt;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #e9ecef;
+        }
+
+        /* Specific Table Colors */
+        .expenses-table th {
+            background-color: #27ae60;
+        }
+
+        .payments-table th {
+            background-color: #f39c12;
+        }
+
+        .balances-table th {
+            background-color: #3498db;
+        }
+
+        .settlements-table th {
+            background-color: #e74c3c;
+        }
+
+        .net-expense-table th {
+            background-color: #7f8c8d;
+        }
+
+        /* Specific Table Row Backgrounds */
+        .payments-table tr:nth-child(odd) {
+            background-color: #fff3e0;
+        }
+
+        .settlements-table tr:nth-child(odd) {
+            background-color: #fdeded;
+        }
+
+        /* Stats */
+        .stats p {
+            margin-bottom: 8pt;
+        }
+
+        /* Page Numbers */
+        @page {
+            @bottom-center {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: 'Arial', sans-serif;
+                font-size: 8pt;
+                color: #7f8c8d;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cover-page">
+        <h1>PayPaladin Summary Report</h1>
+        <h2>Generated on: {{ generated_date }}</h2>
+        <p>A comprehensive overview of shared expenses, payments, and settlements.</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">People</h2>
+        <p class="section-description">List of all participants involved in the shared expenses.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in people %}
+                <tr>
+                    <td>{{ person }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title expenses-table">Expenses</h2>
+        <p class="section-description">All recorded expenses including description, amount, who paid, who was involved,
+            how much each person owes, and the date of the expense.</p>
+        <table class="expenses-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Paid By</th>
+                    <th>Involved</th>
+                    <th>Each Owes</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.id }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>₹{{ "%.2f" | format(expense.amount) }}</td>
+                    <td>{{ expense.paid_by }}</td>
+                    <td>{{ expense.involved_people | join(', ') }}</td>
+                    <td>₹{{ "%.2f" | format(expense.split_amount_per_person) }}</td>
+                    <td>{{ expense.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title payments-table">Payments</h2>
+        <p class="section-description">Payments made directly between participants to settle expenses (outside of
+            automatic calculations).</p>
+        <table class="payments-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.id }}</td>
+                    <td>{{ payment.description }}</td>
+                    <td>₹{{ "%.2f" | format(payment.amount) }}</td>
+                    <td>{{ payment.payer }}</td>
+                    <td>{{ payment.payee }}</td>
+                    <td>{{ payment.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title balances-table">Balances</h2>
+        <p class="section-description">Final balance for each person after considering all expenses and payments.
+            Positive means they are owed, negative means they owe others.</p>
+        <table class="balances-table">
+            <thead>
+                <tr>
+                    <th>Person</th>
+                    <th>Balance (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person, amount in balances.items() %}
+                <tr>
+                    <td>{{ person }}</td>
+                    <td>₹{{ "%.2f" | format(amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title settlements-table">Settlements</h2>
+        <p class="section-description">Suggested payments to settle all balances so that everyone ends up even. These
+            are the minimum number of transactions required.</p>
+        <table class="settlements-table">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if settlements %}
+                {% for settlement in settlements %}
+                <tr>
+                    <td>{{ settlement.from }}</td>
+                    <td>{{ settlement.to }}</td>
+                    <td>₹{{ "%.2f" | format(settlement.amount) }}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3">No settlements needed.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title net-expense-table">Stats</h2>
+        <p><b>Total Expenses:</b> ₹{{ "%.2f" | format(total_expenses) }}</p>
+        <p class="section-description">The total share of expenses each person was responsible for, based on how many
+            expenses they were part of.</p>
+        <table class="net-expense-table">
+            <thead>
+                <tr>
+                    <th>Person</th>
+                    <th>Net Expense (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for person, amount in net_expense_by_person.items() %}
+                <tr>
+                    <td>{{ person }}</td>
+                    <td>₹{{ "%.2f" | format(amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
