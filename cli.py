@@ -3,15 +3,14 @@ import os
 from services.expense_service import ExpenseService
 from utils import display
 from utils.pdf_export import export_summary_to_pdf
+import datetime
 
 expense_service = ExpenseService()
 
 
 @click.group()
 def cli():
-    """
-    PayPaladin: A simple terminal-based expense split and settlement tool.
-    """
+    """"""
     pass
 
 
@@ -31,15 +30,12 @@ def cli():
     help="Name of the person who paid.",
 )
 def add(desc, amount, paid_by):
-    """Add a new expense."""
+    """Add expense."""
     try:
         all_known_people = expense_service.get_all_people()
-        involved_list_final = (
-            []
-        )  # This will hold the final list of people involved in splitting
+        involved_list_final = []
 
         if not all_known_people:
-            # Case 1: No people known yet. Payer is the ONLY one in the split.
             click.echo(
                 click.style(
                     "No people known yet. The payer will be the only person involved in splitting this expense.",
@@ -48,7 +44,6 @@ def add(desc, amount, paid_by):
             )
             involved_list_final = [paid_by]
         else:
-            # Case 2: Known people exist, present selection options.
             click.echo("\n--- Select People Involved in Splitting ---")
             for i, person in enumerate(all_known_people):
                 click.echo(f"  {i+1}. {person}")
@@ -70,10 +65,7 @@ def add(desc, amount, paid_by):
                 )
             )
 
-            # Loop to get valid user selection for involved_list_final
-            temp_selected_people_for_loop = (
-                []
-            )  # Temporary list for current loop iteration
+            temp_selected_people_for_loop = []
             while True:
                 selection_input = click.prompt(
                     "Your selection", default="", show_default=False
@@ -81,7 +73,6 @@ def add(desc, amount, paid_by):
                 selection_input = selection_input.strip().lower()
 
                 if selection_input == "":
-                    # User wants to include ALL known people
                     temp_selected_people_for_loop = all_known_people
                     click.echo(
                         click.style(
@@ -89,10 +80,9 @@ def add(desc, amount, paid_by):
                             fg="blue",
                         )
                     )
-                    break  # Exit selection loop
+                    break
 
                 elif selection_input == "new":
-                    # User wants to manually enter new names
                     manual_names_str = click.prompt(
                         "Enter new names (comma-separated)", type=str
                     )
@@ -107,10 +97,9 @@ def add(desc, amount, paid_by):
                             fg="blue",
                         )
                     )
-                    break  # Exit selection loop
+                    break
 
                 else:
-                    # User selected numbers from the list
                     try:
                         current_attempt_selection = []
                         selected_indices = [
@@ -133,7 +122,7 @@ def add(desc, amount, paid_by):
                                     )
                                 )
                                 valid_input_for_attempt = False
-                                break  # Break from processing indices, re-prompt
+                                break
 
                         if valid_input_for_attempt and current_attempt_selection:
                             temp_selected_people_for_loop = current_attempt_selection
@@ -143,8 +132,8 @@ def add(desc, amount, paid_by):
                                     fg="blue",
                                 )
                             )
-                            break  # Exit selection loop
-                        else:  # Valid input format but no valid selections made, or invalid input detected
+                            break
+                        else:
                             click.echo(
                                 click.style(
                                     "No valid people selected from your input. Please re-enter your selection.",
@@ -160,13 +149,8 @@ def add(desc, amount, paid_by):
                             )
                         )
 
-            # After the selection loop, assign the collected people to involved_list_final
         involved_list_final = temp_selected_people_for_loop
 
-        # --- Final check before creating the expense ---
-        # If, after all selection attempts, involved_list_final is still empty,
-        # it means no valid people were selected. In this case, the payer is the only one involved.
-        # This handles cases where user enters invalid numbers repeatedly without 'new' or empty input.
         if not involved_list_final:
             click.echo(
                 click.style(
@@ -176,10 +160,8 @@ def add(desc, amount, paid_by):
             )
             return
 
-        # Remove duplicates and sort the final list of involved people
         involved_list_final = sorted(list(set(involved_list_final)))
 
-        # --- Create and display the expense (ONLY ONCE) ---
         expense = expense_service.add_new_expense(
             desc, amount, paid_by, involved_list_final
         )
@@ -200,9 +182,10 @@ def add(desc, amount, paid_by):
         click.echo(click.style(f"An unexpected error occurred: {e}", fg="red"))
 
 
+
 @cli.command()
 def view():
-    """View all recorded expenses."""
+    """View expenses."""
     expenses = expense_service.get_all_expenses()
     display.print_all_expenses(expenses)
 
@@ -230,7 +213,7 @@ def view():
     help="Optional description for the payment (default: 'Direct Payment').",
 )
 def pay(payer, payee, amount, desc):
-    """Record a direct payment between two people."""
+    """Record direct payment."""
     try:
         payment = expense_service.add_new_payment(payer, payee, amount, desc)
         click.echo(
@@ -247,7 +230,7 @@ def pay(payer, payee, amount, desc):
 
 @cli.command("view-payments")
 def view_payments():
-    """View all recorded direct payments."""
+    """View payments."""
     payments = expense_service.get_all_payments()
     display.print_all_payments(payments)
 
@@ -255,7 +238,7 @@ def view_payments():
 @cli.command("add-person")
 @click.option("--name", prompt="Enter person's name", help="Name of the person to add.")
 def add_person(name):
-    """Adds a new person to the system."""
+    """Add person."""
     try:
         added = expense_service.add_person(name)
         if added:
@@ -270,7 +253,7 @@ def add_person(name):
 
 @cli.command("list-people")
 def list_people():
-    """Lists all people known to the system (explicitly added or from transactions)."""
+    """List people."""
     people = expense_service.get_all_people()
     display.print_all_people(people)
 

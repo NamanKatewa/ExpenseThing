@@ -3,7 +3,7 @@ from core.models import Expense, Payment
 
 
 def print_expense_details(expense: Expense):
-    """Prints formatted details of a single expense."""
+    """Prints single expense details."""
     print(f"ID: {expense.id}")
     print(f"  Description: {expense.description}")
     print(f"  Amount: ${expense.amount:.2f}")
@@ -15,7 +15,7 @@ def print_expense_details(expense: Expense):
 
 
 def print_all_expenses(expenses: List[Expense]):
-    """Prints formatted details of a list of expenses."""
+    """Prints all expenses."""
     if not expenses:
         print("\nNo expenses recorded yet.")
         return
@@ -27,7 +27,7 @@ def print_all_expenses(expenses: List[Expense]):
 
 
 def print_payment_details(payment: Payment):
-    """Prints formatted details of a single payment."""
+    """Prints single payment details."""
     print(f"ID: {payment.id}")
     print(f"  Description: {payment.description}")
     print(f"  Amount: ${payment.amount:.2f}")
@@ -37,7 +37,7 @@ def print_payment_details(payment: Payment):
 
 
 def print_all_payments(payments: List[Payment]):
-    """Prints formatted details of a list of payments."""
+    """Prints all payments."""
     if not payments:
         print("\nNo payments recorded yet.")
         return

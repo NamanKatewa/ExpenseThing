@@ -52,11 +52,9 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
         textColor=colors.white,
     )
 
-    # Title
     elements.append(Paragraph("PayPaladin Summary", title_style))
     elements.append(Spacer(1, 16))
 
-    # People
     elements.append(Paragraph("People", section_style))
     elements.append(
         Paragraph(
@@ -87,7 +85,6 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     elements.append(people_table)
     elements.append(Spacer(1, 16))
 
-    # Expenses
     elements.append(Paragraph("Expenses", section_style))
     elements.append(
         Paragraph(
@@ -144,16 +141,15 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                     [colors.whitesmoke, colors.HexColor("#e8f5e9")],
                 ),
                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
-                ("ALIGN", (0, 0), (0, -1), "CENTER"),  # ID
-                ("ALIGN", (2, 0), (2, -1), "RIGHT"),  # Amount
-                ("ALIGN", (5, 0), (5, -1), "RIGHT"),  # Each Owes
+                ("ALIGN", (0, 0), (0, -1), "CENTER"),
+                ("ALIGN", (2, 0), (2, -1), "RIGHT"),
+                ("ALIGN", (5, 0), (5, -1), "RIGHT"),
             ]
         )
     )
     elements.append(expense_table)
     elements.append(Spacer(1, 16))
 
-    # Payments
     elements.append(Paragraph("Payments", section_style))
     elements.append(
         Paragraph(
@@ -203,7 +199,6 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     elements.append(payment_table)
     elements.append(Spacer(1, 16))
 
-    # Balances
     elements.append(Paragraph("Balances", section_style))
     elements.append(
         Paragraph(
@@ -246,7 +241,6 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     elements.append(balance_table)
     elements.append(Spacer(1, 16))
 
-    # Settlements
     elements.append(Paragraph("Settlements", section_style))
     elements.append(
         Paragraph(
@@ -301,7 +295,6 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
 
     elements.append(Spacer(1, 8))
 
-    # Total Expenses
     total_expenses = sum(getattr(e, "amount", 0) for e in expenses)
     elements.append(
         Paragraph(f"<b>Total Expenses:</b> ₹{total_expenses:,.2f}", normal_style)
@@ -309,7 +302,6 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
 
     elements.append(Spacer(1, 8))
 
-    # Net Expense (Splits) by Each Person
     elements.append(
         Paragraph(
             "The total share of expenses each person was responsible for, based on how many expenses they were part of.",

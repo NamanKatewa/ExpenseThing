@@ -22,8 +22,8 @@ class ExpenseService:
         )
         self.calculator = ExpenseCalculator()
 
-    # --- Expense Methods ---
     def get_all_expenses(self) -> List[Expense]:
+        """Retrieves all expenses."""
         return self.expense_data_manager.load_items(Expense)
 
     def add_new_expense(
@@ -65,8 +65,8 @@ class ExpenseService:
 
         return new_expense
 
-    # --- Payment Methods ---
     def get_all_payments(self) -> List[Payment]:
+        """Retrieves all payments."""
         return self.payment_data_manager.load_items(Payment)
 
     def add_new_payment(

@@ -8,8 +8,8 @@ class Expense:
     id: int
     description: str
     amount: float
-    paid_by: str  # Name of the person who paid
-    involved_people: List[str]  # Names of people who are splitting the expense
+    paid_by: str
+    involved_people: List[str]
     split_amount_per_person: float
     date: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -26,13 +26,13 @@ class Expense:
 @dataclass
 class Payment:
     id: int
-    payer: str  # Person who made the payment
-    payee: str  # Person who received the payment
+    payer: str
+    payee: str
     amount: float
     date: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
-    description: str = "Direct Payment"  # Optional description for clarity
+    description: str = "Direct Payment"
 
     def to_dict(self) -> Dict:
         return self.__dict__
