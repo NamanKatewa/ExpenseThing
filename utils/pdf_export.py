@@ -1,15 +1,39 @@
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfgen import canvas
 import os
 from datetime import datetime
 
 FONT_PATH = os.path.join(os.path.dirname(__file__), "..", "fonts", "DejaVuSans.ttf")
 pdfmetrics.registerFont(TTFont("DejaVuSans", FONT_PATH))
 
+
+class PageNumCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        canvas.Canvas.__init__(self, *args, **kwargs)
+        self.pages = []
+
+    def showPage(self):
+        self.pages.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        """add the page numbers to the bottom of each page"""
+        num_pages = len(self.pages)
+        for page in self.pages:
+            self.__dict__.update(page)
+            self.draw_page_number(num_pages)
+            canvas.Canvas.showPage(self)
+        canvas.Canvas.save(self)
+
+    def draw_page_number(self, page_count):
+        self.setFont('DejaVuSans', 8)
+        self.setFillColor(colors.HexColor("#7f8c8d"))
+        self.drawString(letter[0] / 2, 30, f"Page {self._pageNumber} of {page_count}")
 
 def format_date(dt):
     if isinstance(dt, str):
@@ -32,30 +56,84 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     doc = SimpleDocTemplate(
         filename,
         pagesize=letter,
-        rightMargin=24,
-        leftMargin=24,
-        topMargin=24,
-        bottomMargin=24,
+        rightMargin=50,
+        leftMargin=50,
+        topMargin=50,
+        bottomMargin=50,
     )
     elements = []
     styles = getSampleStyleSheet()
-    title_style = styles["Heading1"]
-    section_style = styles["Heading2"]
+
+    # Custom Styles
+    title_style = ParagraphStyle(
+        "TitleStyle",
+        parent=styles["h1"],
+        fontName="DejaVuSans",
+        fontSize=36,
+        spaceAfter=24,
+        alignment=1,  # Center alignment
+        textColor=colors.HexColor("#2c3e50"),  # Dark blue-gray
+    )
+    subtitle_style = ParagraphStyle(
+        "SubtitleStyle",
+        parent=styles["h2"],
+        fontName="DejaVuSans",
+        fontSize=18,
+        spaceAfter=36,
+        alignment=1,
+        textColor=colors.HexColor("#34495e"),  # Slightly lighter blue-gray
+    )
+    section_title_style = ParagraphStyle(
+        "SectionTitleStyle",
+        parent=styles["h2"],
+        fontName="DejaVuSans",
+        fontSize=16,
+        spaceBefore=20,
+        spaceAfter=10,
+        textColor=colors.HexColor("#2c3e50"),
+        leading=20,
+    )
     normal_style = ParagraphStyle(
-        "Normal", parent=styles["Normal"], fontName="DejaVuSans", fontSize=10
+        "Normal",
+        parent=styles["Normal"],
+        fontName="DejaVuSans",
+        fontSize=10,
+        leading=12,
+        textColor=colors.HexColor("#34495e"),
     )
     table_header_style = ParagraphStyle(
         "TableHeader",
         parent=styles["Normal"],
         fontName="DejaVuSans",
-        fontSize=10,
+        fontSize=9,
         textColor=colors.white,
+        alignment=1,  # Center alignment for headers
+        leading=12,
+    )
+    footer_style = ParagraphStyle(
+        "FooterStyle",
+        parent=styles["Normal"],
+        fontName="DejaVuSans",
+        fontSize=8,
+        alignment=1,
+        textColor=colors.HexColor("#7f8c8d"),  # Gray
     )
 
-    elements.append(Paragraph("PayPaladin Summary", title_style))
-    elements.append(Spacer(1, 16))
+    # Cover Page
+    elements.append(Spacer(1, 200))
+    elements.append(Paragraph("PayPaladin Summary Report", title_style))
+    elements.append(Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y')}", subtitle_style))
+    elements.append(Spacer(1, 250))
+    elements.append(Paragraph("A comprehensive overview of shared expenses, payments, and settlements.", normal_style))
+    elements.append(Spacer(1, 50))
+    elements.append(Paragraph("Prepared by: Your PayPaladin Team", normal_style))
+    elements.append(Spacer(1, 50))
+    elements.append(Paragraph("Confidential", footer_style))
 
-    elements.append(Paragraph("People", section_style))
+    elements.append(PageBreak())
+
+    # Content Sections
+    elements.append(Paragraph("People", section_title_style))
     elements.append(
         Paragraph(
             "List of all participants involved in the shared expenses.", normal_style
@@ -68,24 +146,25 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     people_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1976d2")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#3498db")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
-                ("FONTSIZE", (0, 0), (-1, -1), 11),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.lightblue],
-                ),
+                ("FONTSIZE", (0, 0), (-1, -1), 10),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(people_table)
     elements.append(Spacer(1, 16))
 
-    elements.append(Paragraph("Expenses", section_style))
+    elements.append(Paragraph("Expenses", section_title_style))
     elements.append(
         Paragraph(
             "All recorded expenses including description, amount, who paid, who was involved, how much each person owes, and the date of the expense.",
@@ -129,28 +208,27 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     expense_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#388e3c")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#27ae60")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
-                ("FONTSIZE", (0, 0), (-1, -1), 9),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.HexColor("#e8f5e9")],
-                ),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+                ("TOPPADDING", (0, 0), (-1, 0), 10),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("ALIGN", (2, 0), (2, -1), "RIGHT"),
                 ("ALIGN", (5, 0), (5, -1), "RIGHT"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
             ]
         )
     )
     elements.append(expense_table)
     elements.append(Spacer(1, 16))
 
-    elements.append(Paragraph("Payments", section_style))
+    elements.append(Paragraph("Payments", section_title_style))
     elements.append(
         Paragraph(
             "Payments made directly between participants to settle expenses (outside of automatic calculations).",
@@ -181,25 +259,24 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     payment_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#fbc02d")),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f39c12")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 9),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.HexColor("#fffde7")],
-                ),
-                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+                ("TOPPADDING", (0, 0), (-1, 0), 10),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#fff3e0")]),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
             ]
         )
     )
     elements.append(payment_table)
     elements.append(Spacer(1, 16))
 
-    elements.append(Paragraph("Balances", section_style))
+    elements.append(Paragraph("Balances", section_title_style))
     elements.append(
         Paragraph(
             "Final balance for each person after considering all expenses and payments. Positive means they are owed, negative means they owe others.",
@@ -224,24 +301,24 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     balance_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0288d1")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#3498db")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.HexColor("#e1f5fe")],
-                ),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(balance_table)
     elements.append(Spacer(1, 16))
 
-    elements.append(Paragraph("Settlements", section_style))
+    elements.append(Paragraph("Settlements", section_title_style))
     elements.append(
         Paragraph(
             "Suggested payments to settle all balances so that everyone ends up even. These are the minimum number of transactions required.",
@@ -269,29 +346,23 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     settlement_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#d32f2f")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e74c3c")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.HexColor("#ffebee")],
-                ),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#fdeded")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(settlement_table)
 
-    stats_style = ParagraphStyle(
-        "StatsHeader",
-        parent=styles["Heading2"],
-        fontName="DejaVuSans",
-        textColor=colors.HexColor("#6d4c41"),
-    )
-    elements.append(Paragraph("Stats", stats_style))
+    elements.append(Paragraph("Stats", section_title_style))
 
     elements.append(Spacer(1, 8))
 
@@ -334,21 +405,21 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     net_expense_table.setStyle(
         TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#8d6e63")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#7f8c8d")),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                (
-                    "ROWBACKGROUNDS",
-                    (0, 1),
-                    (-1, -1),
-                    [colors.whitesmoke, colors.HexColor("#d7ccc8")],
-                ),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(net_expense_table)
     elements.append(Spacer(1, 8))
 
-    doc.build(elements)
+    doc.build(elements, canvasmaker=PageNumCanvas)
