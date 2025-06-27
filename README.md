@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # PayPaladin
 
 PayPaladin is a command-line interface (CLI) tool to track, split, and settle shared expenses. It is suitable for group expenses, shared living costs, or any scenario involving shared finances.
@@ -280,4 +279,3 @@ A PDF file named `paypaladin_report_<timestamp>.pdf` will be created in the curr
 -----
 
 Feel free to contribute, report issues, or suggest new features\!
->>>>>>> 5ae5c74095dbc8c8d05194523605c261b6ec4a9f
