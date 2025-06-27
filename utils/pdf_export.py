@@ -126,7 +126,7 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
     elements.append(Spacer(1, 250))
     elements.append(Paragraph("A comprehensive overview of shared expenses, payments, and settlements.", normal_style))
     elements.append(Spacer(1, 50))
-    elements.append(Paragraph("Prepared by: Your PayPaladin Team", normal_style))
+    
     elements.append(Spacer(1, 50))
     elements.append(Paragraph("Confidential", footer_style))
 
@@ -151,19 +151,18 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 16),
+                ("TOPPADDING", (0, 0), (-1, 0), 16),
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(people_table)
-    elements.append(Spacer(1, 16))
-
+    elements.append(PageBreak())
     elements.append(Paragraph("Expenses", section_title_style))
     elements.append(
         Paragraph(
@@ -213,21 +212,20 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 8),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-                ("TOPPADDING", (0, 0), (-1, 0), 10),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 14),
+                ("TOPPADDING", (0, 0), (-1, 0), 14),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("ALIGN", (0, 0), (0, -1), "CENTER"),
                 ("ALIGN", (2, 0), (2, -1), "RIGHT"),
                 ("ALIGN", (5, 0), (5, -1), "RIGHT"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
             ]
         )
     )
     elements.append(expense_table)
-    elements.append(Spacer(1, 16))
-
+    elements.append(PageBreak())
     elements.append(Paragraph("Payments", section_title_style))
     elements.append(
         Paragraph(
@@ -264,18 +262,17 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 9),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
-                ("TOPPADDING", (0, 0), (-1, 0), 10),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 14),
+                ("TOPPADDING", (0, 0), (-1, 0), 14),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#fff3e0")]),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
             ]
         )
     )
     elements.append(payment_table)
-    elements.append(Spacer(1, 16))
-
+    elements.append(PageBreak())
     elements.append(Paragraph("Balances", section_title_style))
     elements.append(
         Paragraph(
@@ -306,18 +303,17 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 16),
+                ("TOPPADDING", (0, 0), (-1, 0), 16),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
     )
     elements.append(balance_table)
-    elements.append(Spacer(1, 16))
-
+    elements.append(PageBreak())
     elements.append(Paragraph("Settlements", section_title_style))
     elements.append(
         Paragraph(
@@ -351,11 +347,11 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 16),
+                ("TOPPADDING", (0, 0), (-1, 0), 16),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#fdeded")]),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
@@ -410,11 +406,11 @@ def export_summary_to_pdf(filename, people, expenses, payments, balances, settle
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#ecf0f1")),
                 ("FONTNAME", (0, 0), (-1, -1), "DejaVuSans"),
                 ("FONTSIZE", (0, 0), (-1, -1), 10),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("TOPPADDING", (0, 0), (-1, 0), 12),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 16),
+                ("TOPPADDING", (0, 0), (-1, 0), 16),
                 ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8f9fa"), colors.HexColor("#e9ecef")]),
-                ("LEFTPADDING", (0, 0), (-1, -1), 6),
-                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]
         )
