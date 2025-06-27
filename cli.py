@@ -275,7 +275,7 @@ def settle():
 @cli.command("export-pdf")
 @click.option(
     "--filename",
-    default=f"paypaladin_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
+    default=f"paypaladin_report_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
     help="Output PDF filename",
 )
 def export_pdf(filename):
