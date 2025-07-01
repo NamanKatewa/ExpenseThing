@@ -1,6 +1,6 @@
-# PayPaladin
+# ExpenseThing
 
-PayPaladin is a command-line interface (CLI) tool to track, split, and settle shared expenses. It is suitable for group expenses, shared living costs, or any scenario involving shared finances.
+ExpenseThing is a command-line interface (CLI) tool to track, split, and settle shared expenses. It is suitable for group expenses, shared living costs, or any scenario involving shared finances.
 
 ## Features
 
@@ -15,8 +15,8 @@ PayPaladin is a command-line interface (CLI) tool to track, split, and settle sh
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/PayPaladin.git
-    cd PayPaladin
+    git clone https://github.com/your-username/ExpenseThing.git
+    cd ExpenseThing
     ```
 2.  **Install dependencies:**
     ```bash
@@ -66,7 +66,7 @@ Run the CLI using `python cli.py <command> [options]`.
 
 ## Portfolio Highlight
 
-PayPaladin demonstrates skills in:
+ExpenseThing demonstrates skills in:
 
 - **CLI Development:** Building applications with `Click`.
 - **Data Management:** Handling and persisting structured data.
@@ -78,9 +78,9 @@ PayPaladin demonstrates skills in:
 
 ---
 
-# PayPaladin: Your Command-Line Expense Splitter
+# ExpenseThing: Your Command-Line Expense Splitter
 
-PayPaladin is a simple yet effective command-line interface (CLI) tool designed to help you split expenses and settle debts among friends, family, or housemates. Forget the hassle of manual calculations; PayPaladin keeps track of who paid what, who owes whom, and suggests the simplest ways to settle up.
+ExpenseThing is a simple yet effective command-line interface (CLI) tool designed to help you split expenses and settle debts among friends, family, or housemates. Forget the hassle of manual calculations; ExpenseThing keeps track of who paid what, who owes whom, and suggests the simplest ways to settle up.
 
 ## Features
 
@@ -94,7 +94,7 @@ PayPaladin is a simple yet effective command-line interface (CLI) tool designed 
 
 ## Getting Started
 
-Follow these steps to set up and run PayPaladin on your local machine.
+Follow these steps to set up and run ExpenseThing on your local machine.
 
 ### Prerequisites
 
@@ -129,7 +129,7 @@ Follow these steps to set up and run PayPaladin on your local machine.
 
 ### Running the Application
 
-After installation, you can run PayPaladin using the `python cli.py` command followed by the desired command.
+After installation, you can run ExpenseThing using the `python cli.py` command followed by the desired command.
 
 ```bash
 python cli.py --help
@@ -137,7 +137,7 @@ python cli.py --help
 
 ## Usage
 
-Here's how to use the different commands in PayPaladin:
+Here's how to use the different commands in ExpenseThing:
 
 ---
 
@@ -155,7 +155,7 @@ You'll be prompted to enter the person's name.
 
 ### `list-people` - List all known people
 
-See everyone currently recognized by PayPaladin (either explicitly added or included in previous transactions).
+See everyone currently recognized by ExpenseThing (either explicitly added or included in previous transactions).
 
 ```bash
 python cli.py list-people
@@ -259,7 +259,7 @@ python cli.py balances
 
 ### `settle` - Suggest settlement transactions
 
-PayPaladin will calculate and display the most efficient way to settle all outstanding debts with the fewest possible transactions.
+ExpenseThing will calculate and display the most efficient way to settle all outstanding debts with the fewest possible transactions.
 
 ```bash
 python cli.py settle
