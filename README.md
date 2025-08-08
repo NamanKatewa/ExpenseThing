@@ -1,6 +1,13 @@
 ## ExpenseThing
 
-Minimal CLI to track, split, and settle shared expenses. Data persists to JSON in `data/`. Optional PDF report.
+ExpenseThing is a command-line interface (CLI) application built with Python for tracking, splitting, and settling shared expenses. It allows users to manage group expenses, record payments, and view balances efficiently. The application persists data in JSON format and offers an optional feature to export expense reports as PDF files.
+
+### Tools and Technologies
+
+* **Python:** The core programming language used for the application.
+* **Click:** A Python package for creating beautiful command-line interfaces.
+* **pdfkit:** A Python library to convert HTML to PDF, used for generating expense reports.
+* **Jinja2:** A modern and designer-friendly templating engine for Python, used for creating the PDF report template.
 
 ### Install
 
